@@ -1,0 +1,30 @@
+html, body, #root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #2a2622;
+}
+
+canvas {
+  display: block;
+  touch-action: none;
+}
+
+.enter-xr {
+  /* absolute, not fixed: Graspable's XR tests look for a visible button, and a fixed one reads as hidden */
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(22, 27, 38, 0.86);
+  color: #f4f6fb;
+  font: 600 15px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  cursor: pointer;
+}
+
+.enter-xr:hover {
+  background: rgba(22, 27, 38, 1);
+}
