@@ -1,6 +1,10 @@
-// A room several people share: everyone who opens it sees each other as avatars, can pick up the objects
-// on the table and press the board on the wall. Shared state and presence go through the kit in
-// components/Multiplayer.jsx (read MULTIPLAYER.md). Works on a flat screen with the mouse and in a headset.
+// A reading room several people share. The wall is a Google Drive folder, one card per file; the panel
+// floating over the table is the reader, and everyone in the room sees the same document on the same
+// page. Documents, spreadsheets, decks, photographs and recordings each get their own layout
+// (components/Reader.jsx); the drive itself comes from lib/drive.js — a read-only Google sign-in in
+// this browser, with a bundled sample library until someone connects.
+// Shared state and presence go through the kit in components/Multiplayer.jsx (read MULTIPLAYER.md).
+// Works on a flat screen with the mouse and in a headset.
 import { useEffect, useRef, useState } from 'react'
 import { Canvas, useThree } from '@react-three/fiber'
 import { NeutralToneMapping } from 'three'
@@ -8,8 +12,8 @@ import { XR, XROrigin, PointerEvents, createXRStore, noEvents } from '@react-thr
 import { Multiplayer, useMultiplayer } from './components/Multiplayer'
 import { Hand, Controller } from './components/Hands'
 import { Room } from './components/Room'
-import { SharedObjects } from './components/SharedObjects'
-import { Board } from './components/Board'
+import { DriveExplorer } from './components/DriveExplorer'
+import { Reader } from './components/Reader'
 import { SPAWNS, pickSpawn } from './lib/spawn'
 import './App.css'
 
@@ -27,8 +31,8 @@ export default function App() {
           <Multiplayer>
             <Room />
             <Placement />
-            <SharedObjects />
-            <Board />
+            <DriveExplorer />
+            <Reader />
           </Multiplayer>
         </XR>
       </Canvas>
