@@ -3,5 +3,12 @@
   "name": "Document editor in XR",
   "template": "multiuser-developer",
   "createdAt": "2026-10-02T20:25:34.659Z",
-  "install": "running"
+  "install": "done",
+  "published": {
+    "appId": "jr38tux9",
+    "slug": "north-moon-114",
+    "url": "https://north-moon-114.graspable.cloud/",
+    "at": "2026-10-02T20:59:20.853Z",
+    "visibility": "private"
+  }
 }
