@@ -58,7 +58,7 @@ function envTexture() {
   return t
 }
 
-export function Room() {
+export function Room({ onPointerDown }) {
   const planks = useMemo(plankTexture, [])
   const env = useMemo(envTexture, [])
   const scene = useThree((s) => s.scene)
@@ -71,7 +71,7 @@ export function Room() {
   const { w, d, h } = ROOM
   const wall = <meshStandardMaterial color="#e9dfd2" roughness={0.95} />
   return (
-    <group name="room">
+    <group name="room" onPointerDown={onPointerDown}>
       <hemisphereLight args={['#fff4e6', '#7a6a58', 0.45]} />
       {/* daylight through the window on the left wall */}
       <directionalLight
