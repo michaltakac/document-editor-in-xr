@@ -16,8 +16,7 @@
     "repo": "document-editor-in-xr",
     "url": "https://github.com/michaltakac/document-editor-in-xr",
     "private": false,
-    "pushedAt": "2026-10-05T22:46:36.049Z",
-    "pushedSha": "a7e1512ab861e39b6b289ff659e28c853cd78707",
-    "problem": "One or more branches were not updated: \n  - refs/heads/main: Internal Server Error"
+    "pushedAt": "2026-10-06T00:13:53.175Z",
+    "pushedSha": "d0ea7a4117aea5bd90f3bd655ae1650245229290"
   }
 }

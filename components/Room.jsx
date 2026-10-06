@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react'
 import { useThree } from '@react-three/fiber'
 import { CanvasTexture, Color, EquirectangularReflectionMapping, RepeatWrapping, SRGBColorSpace } from 'three'
 import { TABLE } from '../lib/spawn'
+import { Flowers } from './Flowers'
 
 export const ROOM = { w: 6.4, d: 6.4, h: 3.0 } // metres; the floor is y = 0, the room is centred on x = 0, z = -1.2
 const CZ = -1.2
@@ -151,6 +152,11 @@ export function Room({ onPointerDown }) {
           </mesh>
         ))}
       </group>
+
+      {/* a vase of tulips and ranunculus in the back-left corner, across from the plant */}
+      <Flowers position={[-2.6, 0, CZ - 2.6]} rotation-y={0.6} />
+      {/* a small bouquet on the far side of the table, clear of the shared objects' rest spots */}
+      <Flowers position={[TABLE.x - 0.3, TABLE.top, TABLE.z - 0.3]} rotation-y={2.2} scale={0.5} name="table flowers" />
     </group>
   )
 }
