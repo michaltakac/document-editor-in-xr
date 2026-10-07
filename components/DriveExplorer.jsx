@@ -27,7 +27,14 @@ export function DriveExplorer({ position = [0, 1.45, -4.32] }) {
   const { files, loading, error } = useLibrary(here.id)
 
   // Connecting a real Drive moves the room out of the sample library and into My Drive.
-  useEffect(() => { if (drive.connected && SAMPLE_FOLDERS.includes(here.id)) { setFolder(DRIVE_ROOT); setShelf(0) } }, [drive.connected]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (drive.connected && SAMPLE_FOLDERS.includes(here.id)) {
+      setFolder(DRIVE_ROOT)
+      setShelf(0)
+      setOpen(null)
+      setPage(0)
+    }
+  }, [drive.connected]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const shelves = Math.max(1, Math.ceil(files.length / PER_SHELF))
   const index = Math.min(Math.max(0, shelf ?? 0), shelves - 1)
@@ -53,7 +60,8 @@ export function DriveExplorer({ position = [0, 1.45, -4.32] }) {
 
   const path = [...(here.trail ?? []).map((t) => t.name), here.name].join('  ›  ')
   const source = drive.connected ? 'Google Drive · read-only' : drive.available ? 'Sample library · not connected' : 'Sample library · set VITE_GOOGLE_CLIENT_ID for Drive'
-  const status = error ? error : loading ? 'Loading…' : needsConnect ? 'Connect your Drive to see this folder' : files.length === 0 ? 'This folder is empty' : ''
+  const connectionError = drive.error || error
+  const status = connectionError ? connectionError : drive.connecting ? 'Connecting to Google Drive…' : loading ? 'Loading…' : needsConnect ? 'Connect your Drive to see this folder' : files.length === 0 ? 'This folder is empty' : ''
 
   return (
     <group name="drive explorer" position={position}>
@@ -63,7 +71,7 @@ export function DriveExplorer({ position = [0, 1.45, -4.32] }) {
       </mesh>
 
       <Label text={path} name="explorer path" size={0.07} weight={700} width={1.7} position={[-0.42, 0.8, 0.03]} />
-      <Label text={status || source} name="explorer status" size={0.038} color={error ? '#ff9c8a' : '#95a0b5'} width={1.7} position={[-0.42, 0.7, 0.03]} />
+      <Label text={status || source} name="explorer status" size={0.038} color={connectionError ? '#ff9c8a' : '#95a0b5'} width={1.7} position={[-0.42, 0.7, 0.03]} />
 
       {(here.trail ?? []).length > 0 && <Chip label="▲ Up" width={0.34} position={[-1.3, 0.8, 0.03]} onPress={up} />}
       <Chip
