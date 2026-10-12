@@ -14,7 +14,6 @@ import { Hand, Controller } from './components/Hands'
 import { Room, ROOM } from './components/Room'
 import { DriveExplorer } from './components/DriveExplorer'
 import { Reader } from './components/Reader'
-import { Portal } from './components/Portal'
 import { TrippyWorld } from './components/TrippyWorld'
 import { SPAWNS, pickSpawn } from './lib/spawn'
 import './App.css'
@@ -36,16 +35,13 @@ export default function App() {
         <PointerEvents />
         <XR store={store}>
           <Multiplayer>
+            <Placement />
             {inTrippyWorld ? (
-              <>
-                <TrippyWorld />
-                <Portal closeWorld={closeWorld} />
-              </>
+              <TrippyWorld onExit={closeWorld} onPointerDown={startLook} />
             ) : (
               <>
                 {/* Dragging the bare room (floor, walls, table) with the mouse looks around; cards and buttons keep their presses. */}
-                <Room onPointerDown={startLook} />
-                <Placement />
+                <Room onPointerDown={startLook} onEnterPortal={openWorld} />
                 <DriveExplorer />
                 <Reader />
               </>

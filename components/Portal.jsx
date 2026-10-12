@@ -1,82 +1,65 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { Color } from 'three'
 import { usePress } from '../lib/interaction'
 import { Label } from './Label'
 
-// Portal on the front wall that opens a trippy world
-export function Portal({ openWorld, closeWorld }) {
-  const meshRef = useRef()
-  const [hovered, setHovered] = useState(false)
-  const [pulse, setPulse] = useState(1)
+// A glowing doorway. In the lounge it sits on the front wall (behind spawn 0, z = 2.0)
+// and takes you to the trippy world; inside that world the same door brings you back.
+// One press (poke / pinch / trigger / mouse) through usePress — animation is done by
+// mutating refs in useFrame, never with per-frame React state.
+export function Portal({ openWorld, closeWorld, exit = false, position = [0, 1.15, 1.97], rotationY = Math.PI, portalScale = 1 }) {
+  const swirl = useRef()
+  const glow = useRef()
+  const inner = useRef()
+  const { hovered, pressed, handlers } = usePress({ onPress: () => (exit ? closeWorld?.() : openWorld?.()) })
+  const color = useRef(new Color())
 
-  // Pulse animation when hovering
-  useFrame((_, dt) => {
-    if (hovered) {
-      setPulse(1 + Math.sin(Date.now() * 0.005) * 0.15)
-    } else {
-      setPulse(1)
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime
+    if (swirl.current) {
+      swirl.current.rotation.z = t * 0.9
+      const s = 1 + Math.sin(t * 2.2) * 0.05 + (hovered ? 0.08 : 0)
+      swirl.current.scale.setScalar(s)
     }
+    if (inner.current) {
+      color.current.setHSL((t * 0.07 + (exit ? 0.45 : 0.78)) % 1, 0.85, hovered ? 0.62 : 0.5)
+      inner.current.color.copy(color.current)
+      inner.current.emissive?.copy(color.current)
+    }
+    if (glow.current) glow.current.material.opacity = 0.22 + Math.sin(t * 2.2) * 0.06 + (hovered ? 0.15 : 0)
   })
 
-  const handlePress = () => {
-    if (openWorld) openWorld()
-  }
-
+  const s = (pressed ? 0.96 : 1) * portalScale
   return (
-    <group name="portal" position={[0, 2.2, 2]} rotation-y={Math.PI}>
-      {/* Portal frame */}
-      <mesh
-        ref={meshRef}
-        name="portal frame"
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
-        onPointerDown={handlePress}
-      >
-        <boxGeometry args={[2.2, 3.2, 0.15]} />
-        <meshStandardMaterial 
-          color={hovered ? '#f0a030' : '#d48020'} 
-          roughness={0.3} 
-          metalness={0.7} 
-        />
+    <group name={exit ? 'portal back to room' : 'portal'} position={position} rotation-y={rotationY} scale={s} {...handlers}>
+      {/* frame */}
+      <mesh name={exit ? 'portal back frame' : 'portal frame'} castShadow>
+        <torusGeometry args={[0.78, 0.09, 14, 40]} />
+        <meshStandardMaterial color={exit ? '#2ec4b6' : '#ff9f1c'} emissive={exit ? '#0b6e63' : '#7a3c00'} emissiveIntensity={hovered ? 1.2 : 0.6} roughness={0.35} metalness={0.4} />
       </mesh>
-
-      {/* Portal opening (glowing effect) */}
-      <mesh name="portal opening" position-z={0.08}>
-        <boxGeometry args={[1.8, 2.8, 0.05]} />
-        <meshStandardMaterial 
-          color="#221155" 
-          emissive={hovered ? '#4422aa' : '#331188'} 
-          emissiveIntensity={0.6}
-          transparent
-          opacity={0.85}
-        />
+      {/* the shimmering opening — this is the big, easy-to-hit press target */}
+      <mesh name={exit ? 'portal back opening' : 'portal opening'} position-z={0.02}>
+        <circleGeometry args={[0.76, 40]} />
+        <meshStandardMaterial ref={inner} color="#7b2ff7" emissive="#7b2ff7" emissiveIntensity={0.9} roughness={0.4} transparent opacity={0.92} />
       </mesh>
-
-      {/* Portal label */}
-      <Label
-        position={[0, 1.9, 0.15]}
-        text="Enter Portal"
-        color={hovered ? '#fff' : '#ffd080'}
-        size={0.06}
-        weight={600}
-      />
-      
-      {/* Animated portal swirl (simple spiral) */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <mesh
-          key={i}
-          name={`portal swirl ${i}`}
-          position={[Math.cos(i * 0.785) * 0.5, Math.sin(i * 0.785) * 0.5, 0.1]}
-          scale={pulse}
-        >
-          <sphereGeometry args={[0.08, 16, 12]} />
-          <meshBasicMaterial 
-            color={`hsl(${(i * 45 + Date.now() * 0.02) % 360}, 80%, 60%)`} 
-            transparent 
-            opacity={0.7} 
-          />
-        </mesh>
-      ))}
+      <mesh ref={glow} name="portal glow" position-z={0.05}>
+        <circleGeometry args={[0.95, 40]} />
+        <meshBasicMaterial color={exit ? '#2ec4b6' : '#ffbf69'} transparent opacity={0.25} depthWrite={false} />
+      </mesh>
+      {/* orbiting swirl motes */}
+      <group ref={swirl} position-z={0.09}>
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <mesh key={i} name={`portal swirl ${i}`} position={[Math.cos(i * 1.047) * 0.52, Math.sin(i * 1.047) * 0.52, 0]}>
+            <sphereGeometry args={[0.055, 12, 10]} />
+            <meshBasicMaterial color={i % 2 ? '#ffe66d' : '#4ecdc4'} toneMapped={false} />
+          </mesh>
+        ))}
+      </group>
+      <Label position={[0, 1.08, 0.1]} size={0.075} weight={600} color="#ffffff"
+        text={exit ? 'Back to the Room' : 'Trippy Mushroom World'} name={exit ? 'portal back label' : 'portal label'} />
+      <Label position={[0, -1.02, 0.1]} size={0.05} weight={600} color="#ffe66d"
+        text="Press the portal" name="portal hint" />
     </group>
   )
 }

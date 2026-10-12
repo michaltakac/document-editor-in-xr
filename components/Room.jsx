@@ -61,7 +61,7 @@ function envTexture() {
   return t
 }
 
-export function Room({ onPointerDown }) {
+export function Room({ onPointerDown, onEnterPortal }) {
   const planks = useMemo(plankTexture, [])
   const env = useMemo(envTexture, [])
   const scene = useThree((s) => s.scene)
@@ -160,7 +160,7 @@ export function Room({ onPointerDown }) {
       {/* the painting bought for the room, on the right wall facing the table */}
       <Painting position={[w / 2 - 0.01, 1.6, CZ]} rotation-y={-Math.PI / 2} />
       {/* portal on the front wall (behind spawn 0) */}
-      <Portal closeWorld={() => {}} />
+      <Portal openWorld={onEnterPortal} />
     </group>
   )
 }
