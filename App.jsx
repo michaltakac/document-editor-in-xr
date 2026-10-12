@@ -14,6 +14,8 @@ import { Hand, Controller } from './components/Hands'
 import { Room, ROOM } from './components/Room'
 import { DriveExplorer } from './components/DriveExplorer'
 import { Reader } from './components/Reader'
+import { Portal } from './components/Portal'
+import { TrippyWorld } from './components/TrippyWorld'
 import { SPAWNS, pickSpawn } from './lib/spawn'
 import './App.css'
 
@@ -21,6 +23,11 @@ import './App.css'
 const store = createXRStore({ emulate: false, hand: Hand, controller: Controller })
 
 export default function App() {
+  const [inTrippyWorld, setInTrippyWorld] = useState(false)
+
+  const openWorld = () => setInTrippyWorld(true)
+  const closeWorld = () => setInTrippyWorld(false)
+
   return (
     <>
       <button className="enter-xr" onClick={() => store.enterVR()}>Enter VR</button>
@@ -29,11 +36,20 @@ export default function App() {
         <PointerEvents />
         <XR store={store}>
           <Multiplayer>
-            {/* Dragging the bare room (floor, walls, table) with the mouse looks around; cards and buttons keep their presses. */}
-            <Room onPointerDown={startLook} />
-            <Placement />
-            <DriveExplorer />
-            <Reader />
+            {inTrippyWorld ? (
+              <>
+                <TrippyWorld />
+                <Portal closeWorld={closeWorld} />
+              </>
+            ) : (
+              <>
+                {/* Dragging the bare room (floor, walls, table) with the mouse looks around; cards and buttons keep their presses. */}
+                <Room onPointerDown={startLook} />
+                <Placement />
+                <DriveExplorer />
+                <Reader />
+              </>
+            )}
           </Multiplayer>
         </XR>
       </Canvas>
