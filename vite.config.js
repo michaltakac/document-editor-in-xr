@@ -10,4 +10,5 @@ export default defineConfig(({ command }) => ({
   // Physics must not be pre-bundled: when the dev server meets a new package while it runs, it
   // re-bundles, and the physics engine then exists twice (one copy never started) until a restart.
   optimizeDeps: { exclude: ['@react-three/rapier'] },
+  server: { proxy: process.env.GRASPABLE_CONNECT ? { '/_connect': { target: process.env.GRASPABLE_CONNECT, changeOrigin: true, rewrite: (p) => p.replace(/^\/_connect/, '') } } : {} },
 }))

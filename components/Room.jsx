@@ -154,10 +154,8 @@ export function Room({ onPointerDown }) {
         ))}
       </group>
 
-      {/* a vase of tulips and ranunculus in the back-left corner, across from the plant */}
-      <Flowers position={[-2.6, 0, CZ - 2.6]} rotation-y={0.6} />
-      {/* a small bouquet on the far side of the table, clear of the shared objects' rest spots */}
-      <Flowers position={[TABLE.x - 0.3, TABLE.top, TABLE.z - 0.3]} rotation-y={2.2} scale={0.5} name="table flowers" />
+      {/* a small bouquet in the center of the table */}
+      <Flowers position={[TABLE.x, TABLE.top, TABLE.z]} rotation-y={2.2} scale={0.5} name="table flowers" />
       {/* the painting bought for the room, on the right wall facing the table */}
       <Painting position={[w / 2 - 0.01, 1.6, CZ]} rotation-y={-Math.PI / 2} />
     </group>
